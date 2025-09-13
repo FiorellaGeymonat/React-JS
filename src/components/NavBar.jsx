@@ -1,20 +1,34 @@
-import CartWidget from "./CartWidget"
-import "../App.css"
+import { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { fetchCategories } from "../data/api";
+import CartWidget from "./CartWidget";
+import "../App.css";
 
 function NavBar() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories()
+      .then(setCategories)
+      .catch((err) => console.error("Error cargando categorías:", err));
+  }, []);
+
   return (
     <nav className="navbar">
-      <div className="logo">🥞 The Pancake Co.</div>
+      <Link to="/" className="logo">🥞 The Pancake Co.</Link>
       <ul className="nav-links">
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#">Mix Proteico</a></li>
-        <li><a href="#">Accesorios</a></li>
-        <li><a href="#">Ebooks</a></li>
-        <li><a href="#">Contacto</a></li>
+        <li><NavLink to="/">Inicio</NavLink></li>
+        {categories.slice(0,5).map((cat) => (
+          <li key={cat}>
+            <NavLink to={`/category/${cat}`}>
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </NavLink>
+          </li>
+        ))}
       </ul>
       <CartWidget />
     </nav>
-  )
+  );
 }
 
-export default NavBar
+export default NavBar;
